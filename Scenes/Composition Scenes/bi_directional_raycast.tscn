@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cks170601g8hw"]
+
+[ext_resource type="Script" path="res://Scripts/Composition Scripts/Bi-DirectionalRaycast.gd" id="1_kl6jr"]
+
+[node name="Bi-Directional Raycast" type="Node2D"]
+script = ExtResource("1_kl6jr")

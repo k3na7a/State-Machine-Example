@@ -1,0 +1,119 @@
+[gd_scene load_steps=19 format=3 uid="uid://cnnu7g616chod"]
+
+[ext_resource type="Texture2D" uid="uid://dhmodocnsu7ds" path="res://Scenes/Enemies/Goomba/Assets/Goomba_Walk1.png" id="1_6k7s1"]
+[ext_resource type="Script" path="res://Scenes/Enemies/Goomba/Goomba.gd" id="1_detml"]
+[ext_resource type="Texture2D" uid="uid://cxtty1fuwy5ab" path="res://Scenes/Enemies/Goomba/Assets/Goomba_Walk2.png" id="2_2ymmx"]
+[ext_resource type="Script" path="res://Scenes/Enemies/Goomba/Scripts/States/Idle.gd" id="2_aq2gx"]
+[ext_resource type="PackedScene" uid="uid://7plgxu4qtpta" path="res://Scenes/Composition Scenes/health.tscn" id="2_b7ahh"]
+[ext_resource type="PackedScene" uid="uid://cfaxsuh2ctqlv" path="res://Scenes/Composition Scenes/collision_body.tscn" id="3_3u1me"]
+[ext_resource type="PackedScene" uid="uid://di8618tbhg3u6" path="res://Scenes/Composition Scenes/gravity.tscn" id="4_cwk00"]
+[ext_resource type="PackedScene" uid="uid://cnmu5t3om0mhd" path="res://Scenes/Composition Scenes/hurtbox.tscn" id="5_a2hlu"]
+[ext_resource type="PackedScene" uid="uid://otgkgmbymvw2" path="res://Scenes/Composition Scenes/move_character.tscn" id="7_a0tks"]
+[ext_resource type="PackedScene" uid="uid://uowomoy0ju87" path="res://Scenes/Composition Scenes/state_machine.tscn" id="7_j5iob"]
+[ext_resource type="PackedScene" uid="uid://byc1kg4fxnika" path="res://Scenes/Composition Scenes/toggle_process.tscn" id="7_upmr4"]
+[ext_resource type="Shape2D" uid="uid://bqexy50q2jtr7" path="res://Scenes/Enemies/Goomba/Resources/RectangleShape.tres" id="12_jyrcu"]
+[ext_resource type="PackedScene" uid="uid://cks170601g8hw" path="res://Scenes/Composition Scenes/bi_directional_raycast.tscn" id="13_1m5yo"]
+[ext_resource type="Script" path="res://Scenes/Enemies/Goomba/Scripts/States/Move.gd" id="15_k7igm"]
+[ext_resource type="PackedScene" uid="uid://y6gryt781p3a" path="res://Scenes/Composition Scenes/sprite.tscn" id="16_aqewy"]
+
+[sub_resource type="Animation" id="Animation_ka3py"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("1_6k7s1")]
+}
+
+[sub_resource type="Animation" id="Animation_cgfls"]
+resource_name = "_move"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("1_6k7s1"), ExtResource("2_2ymmx")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_n2xpc"]
+_data = {
+"RESET": SubResource("Animation_ka3py"),
+"_move": SubResource("Animation_cgfls")
+}
+
+[node name="Goomba" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 6
+script = ExtResource("1_detml")
+
+[node name="Collision Body" parent="." instance=ExtResource("3_3u1me")]
+shape = ExtResource("12_jyrcu")
+script = null
+
+[node name="Toggle Process" parent="." node_paths=PackedStringArray("character") instance=ExtResource("7_upmr4")]
+character = NodePath("..")
+
+[node name="Health" parent="." instance=ExtResource("2_b7ahh")]
+
+[node name="Gravity" parent="." node_paths=PackedStringArray("character") instance=ExtResource("4_cwk00")]
+character = NodePath("..")
+
+[node name="Move Character" parent="." node_paths=PackedStringArray("character") instance=ExtResource("7_a0tks")]
+move_speed = 20
+character = NodePath("..")
+
+[node name="Bi-Directional Raycast" parent="." node_paths=PackedStringArray("RCastL", "RCastR") instance=ExtResource("13_1m5yo")]
+RCastL = NodePath("RCastL")
+RCastR = NodePath("RCastR")
+
+[node name="RCastL" type="RayCast2D" parent="Bi-Directional Raycast"]
+target_position = Vector2(-9, 0)
+collision_mask = 6
+
+[node name="RCastR" type="RayCast2D" parent="Bi-Directional Raycast"]
+target_position = Vector2(9, 0)
+collision_mask = 6
+
+[node name="Sprite" parent="." node_paths=PackedStringArray("animation_player") instance=ExtResource("16_aqewy")]
+texture = ExtResource("1_6k7s1")
+animation_player = NodePath("Animation Player")
+
+[node name="Animation Player" type="AnimationPlayer" parent="Sprite"]
+libraries = {
+"": SubResource("AnimationLibrary_n2xpc")
+}
+autoplay = "_move"
+
+[node name="Hurtbox" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("5_a2hlu")]
+health_component = NodePath("../Health")
+
+[node name="Collision Shape" type="CollisionShape2D" parent="Hurtbox"]
+shape = ExtResource("12_jyrcu")
+
+[node name="State Machine" parent="." node_paths=PackedStringArray("starting_state") instance=ExtResource("7_j5iob")]
+starting_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="State Machine" node_paths=PackedStringArray("move_character", "sprite")]
+script = ExtResource("2_aq2gx")
+move_character = NodePath("../../Move Character")
+sprite = NodePath("../../Sprite")
+animation_name = "_move"
+
+[node name="Move" type="Node" parent="State Machine" node_paths=PackedStringArray("bi_directional_raycast", "sprite")]
+script = ExtResource("15_k7igm")
+bi_directional_raycast = NodePath("../../Bi-Directional Raycast")
+sprite = NodePath("../../Sprite")
+animation_name = "_move"

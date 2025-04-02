@@ -1,0 +1,169 @@
+[gd_scene load_steps=10 format=3 uid="uid://cux3wjkx85jfu"]
+
+[ext_resource type="Script" path="res://Scenes/ui.gd" id="1_5fgbr"]
+[ext_resource type="Script" path="res://Scenes/DeveloperHUD.gd" id="2_i4hb0"]
+[ext_resource type="FontFile" uid="uid://bnmbr556ceygs" path="res://Assets/Fonts/font.ttf" id="2_imkkd"]
+[ext_resource type="Shader" path="res://Resources/shaders/blur2.gdshader" id="3_emukb"]
+[ext_resource type="Script" path="res://Scenes/PauseScreen.gd" id="3_rwog6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jseyp"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0, 0, 0, 0.768627)
+anti_aliasing = false
+
+[sub_resource type="LabelSettings" id="LabelSettings_edyn3"]
+font = ExtResource("2_imkkd")
+shadow_size = 0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jn3m3"]
+shader = ExtResource("3_emukb")
+shader_parameter/lod = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5o5g2"]
+bg_color = Color(0.351563, 0.351563, 0.351563, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="UI" type="CanvasLayer" node_paths=PackedStringArray("dev_hud")]
+script = ExtResource("1_5fgbr")
+dev_hud_active = null
+dev_hud = NodePath("Developer HUD")
+
+[node name="Developer HUD" type="Control" parent="." node_paths=PackedStringArray("label")]
+texture_filter = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_i4hb0")
+label = NodePath("MarginContainer/Label")
+
+[node name="MarginContainer" type="MarginContainer" parent="Developer HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Label" type="Label" parent="Developer HUD/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_jseyp")
+label_settings = SubResource("LabelSettings_edyn3")
+justification_flags = 169
+
+[node name="Pause Screen" type="Control" parent="." node_paths=PackedStringArray("resume_button", "quit_button")]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+script = ExtResource("3_rwog6")
+resume_button = NodePath("CenterContainer/PanelContainer/MarginContainer/VBoxContainer/Return")
+quit_button = NodePath("CenterContainer/PanelContainer/MarginContainer/VBoxContainer/Quit")
+
+[node name="Overlay" type="Control" parent="Pause Screen"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Blur Effect" type="ColorRect" parent="Pause Screen/Overlay"]
+material = SubResource("ShaderMaterial_jn3m3")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimming Effect" type="ColorRect" parent="Pause Screen/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.313726)
+
+[node name="CenterContainer" type="CenterContainer" parent="Pause Screen"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -73.5
+offset_top = -56.5
+offset_right = 73.5
+offset_bottom = 56.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Pause Screen/CenterContainer"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_5o5g2")
+
+[node name="MarginContainer" type="MarginContainer" parent="Pause Screen/CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Pause Screen/CenterContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="Pause Screen/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_imkkd")
+theme_override_font_sizes/font_size = 24
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="Return" type="Button" parent="Pause Screen/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("2_imkkd")
+theme_override_font_sizes/font_size = 24
+text = "RETURN TO GAME
+"
+
+[node name="Settings" type="Button" parent="Pause Screen/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("2_imkkd")
+theme_override_font_sizes/font_size = 24
+text = "SETTINGS
+"
+
+[node name="Quit" type="Button" parent="Pause Screen/CenterContainer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("2_imkkd")
+theme_override_font_sizes/font_size = 24
+text = "QUIT TO DESKTOP
+"
+
+[connection signal="player_status" from="." to="Developer HUD" method="_on_ui_player_status"]

@@ -1,0 +1,100 @@
+[gd_scene load_steps=8 format=3 uid="uid://cux3wjkx85jfu"]
+
+[ext_resource type="Script" path="res://Scenes/ui.gd" id="1_5fgbr"]
+[ext_resource type="FontFile" uid="uid://bnmbr556ceygs" path="res://Assets/Fonts/font.ttf" id="2_imkkd"]
+[ext_resource type="Shader" path="res://Resources/shaders/blur2.gdshader" id="3_emukb"]
+[ext_resource type="Script" path="res://Scenes/PauseScreen.gd" id="3_rwog6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jseyp"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0, 0, 0, 0.768627)
+shadow_color = Color(0, 0, 0, 0.407843)
+shadow_size = 6
+shadow_offset = Vector2(3, 3)
+anti_aliasing = false
+
+[sub_resource type="LabelSettings" id="LabelSettings_edyn3"]
+font = ExtResource("2_imkkd")
+font_size = 20
+shadow_size = 0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jn3m3"]
+shader = ExtResource("3_emukb")
+shader_parameter/lod = 1.0
+
+[node name="UI" type="CanvasLayer" node_paths=PackedStringArray("label")]
+script = ExtResource("1_5fgbr")
+label = NodePath("Developer HUD/MarginContainer/VBoxContainer/HBoxContainer/Label")
+
+[node name="Developer HUD" type="Control" parent="."]
+texture_filter = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Developer HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Developer HUD/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Developer HUD/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Developer HUD/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_jseyp")
+label_settings = SubResource("LabelSettings_edyn3")
+justification_flags = 169
+
+[node name="Pause Screen" type="Control" parent="." node_paths=PackedStringArray("overlay_control")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+script = ExtResource("3_rwog6")
+overlay_control = NodePath("Overlay")
+
+[node name="Overlay" type="Control" parent="Pause Screen"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Blur Effect" type="ColorRect" parent="Pause Screen/Overlay"]
+material = SubResource("ShaderMaterial_jn3m3")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimming Effect" type="ColorRect" parent="Pause Screen/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.313726)

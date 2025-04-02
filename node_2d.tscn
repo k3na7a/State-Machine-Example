@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dr7ijj8ndscn6"]
+
+[ext_resource type="Script" path="res://node_2d.gd" id="1_coox5"]
+
+[node name="Player Spawn" type="Node2D" node_paths=PackedStringArray("player_spawn")]
+script = ExtResource("1_coox5")
+player_spawn = NodePath("Marker 2D")
+
+[node name="Marker 2D" type="Marker2D" parent="."]
+position = Vector2(32, 672)

@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://ca4ee7yhh0jid"]
+
+[ext_resource type="Script" path="res://Scenes/Player/Scripts/PlayerState.gd" id="1_5dgur"]
+
+[node name="Player State" type="Node" node_paths=PackedStringArray("jump_component", "velocity_component", "gravity_component", "screen_clamp_component")]
+script = ExtResource("1_5dgur")
+jump_component = NodePath("")
+velocity_component = NodePath("")
+gravity_component = NodePath("")
+screen_clamp_component = NodePath("")
+animation_name = "_idle"
+has_control = true

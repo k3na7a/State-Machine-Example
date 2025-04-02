@@ -1,0 +1,158 @@
+[gd_scene load_steps=21 format=3 uid="uid://cnnu7g616chod"]
+
+[ext_resource type="Texture2D" uid="uid://dhmodocnsu7ds" path="res://Scenes/Enemies/Goomba/Assets/Goomba_Walk1.png" id="1_6k7s1"]
+[ext_resource type="Script" path="res://Scenes/Enemies/Goomba/Scripts/Goomba.gd" id="1_detml"]
+[ext_resource type="Texture2D" uid="uid://cxtty1fuwy5ab" path="res://Scenes/Enemies/Goomba/Assets/Goomba_Walk2.png" id="2_2ymmx"]
+[ext_resource type="Script" path="res://Scenes/Enemies/Goomba/Scripts/States/Idle.gd" id="2_aq2gx"]
+[ext_resource type="PackedScene" uid="uid://7plgxu4qtpta" path="res://Scenes/Composition Scenes/health.tscn" id="2_b7ahh"]
+[ext_resource type="PackedScene" uid="uid://di8618tbhg3u6" path="res://Scenes/Composition Scenes/gravity.tscn" id="4_cwk00"]
+[ext_resource type="PackedScene" uid="uid://cnmu5t3om0mhd" path="res://Scenes/Composition Scenes/hurtbox.tscn" id="5_a2hlu"]
+[ext_resource type="PackedScene" uid="uid://fsc18p2iv01h" path="res://Scenes/Composition Scenes/damage.tscn" id="6_pio2m"]
+[ext_resource type="PackedScene" uid="uid://otgkgmbymvw2" path="res://Scenes/Composition Scenes/velocity.tscn" id="7_a0tks"]
+[ext_resource type="PackedScene" uid="uid://uowomoy0ju87" path="res://Scenes/Composition Scenes/state_machine.tscn" id="7_j5iob"]
+[ext_resource type="Shape2D" uid="uid://bqexy50q2jtr7" path="res://Scenes/Enemies/Goomba/Resources/RectangleShape.tres" id="12_jyrcu"]
+[ext_resource type="PackedScene" uid="uid://cks170601g8hw" path="res://Scenes/Composition Scenes/bi_directional_raycast.tscn" id="13_1m5yo"]
+[ext_resource type="PackedScene" uid="uid://ckggtow3e0n64" path="res://Scenes/Composition Scenes/hitbox.tscn" id="13_morpx"]
+[ext_resource type="Script" path="res://Scenes/Enemies/Goomba/Scripts/GoombaState.gd" id="14_ood5i"]
+[ext_resource type="Script" path="res://Scenes/Enemies/Goomba/Scripts/States/Move.gd" id="15_k7igm"]
+[ext_resource type="PackedScene" uid="uid://y6gryt781p3a" path="res://Scenes/Composition Scenes/sprite.tscn" id="16_aqewy"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1aofi"]
+
+[sub_resource type="Animation" id="Animation_ka3py"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("1_6k7s1")]
+}
+
+[sub_resource type="Animation" id="Animation_cgfls"]
+resource_name = "_move"
+length = 0.4
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("1_6k7s1"), ExtResource("2_2ymmx")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_n2xpc"]
+_data = {
+"RESET": SubResource("Animation_ka3py"),
+"_move": SubResource("Animation_cgfls")
+}
+
+[node name="Goomba" type="CharacterBody2D" node_paths=PackedStringArray("state_machine", "sprite", "animation_player")]
+collision_layer = 4
+collision_mask = 6
+script = ExtResource("1_detml")
+state_machine = NodePath("Composition Nodes/Finite State Machine")
+sprite = NodePath("Sprite")
+animation_player = NodePath("Sprite/Animation Player")
+
+[node name="Collision Shape" type="CollisionShape2D" parent="."]
+shape = ExtResource("12_jyrcu")
+
+[node name="Hurtbox" parent="." node_paths=PackedStringArray("health_component", "collisionShape") instance=ExtResource("5_a2hlu")]
+collision_layer = 4
+health_component = NodePath("../Composition Nodes/Health")
+collisionShape = NodePath("Collision Shape")
+
+[node name="Collision Shape" type="CollisionShape2D" parent="Hurtbox"]
+shape = ExtResource("12_jyrcu")
+
+[node name="Hitbox" parent="." node_paths=PackedStringArray("damage_component", "collisionShape") instance=ExtResource("13_morpx")]
+damage_component = NodePath("../Composition Nodes/Damage")
+collisionShape = NodePath("Collision Shape")
+
+[node name="Collision Shape" type="CollisionShape2D" parent="Hitbox"]
+shape = ExtResource("12_jyrcu")
+
+[node name="Bi-Directional Raycast" parent="." node_paths=PackedStringArray("RCastL", "RCastR") instance=ExtResource("13_1m5yo")]
+RCastL = NodePath("RCastL")
+RCastR = NodePath("RCastR")
+
+[node name="RCastL" type="RayCast2D" parent="Bi-Directional Raycast"]
+target_position = Vector2(-10, 0)
+collision_mask = 6
+
+[node name="RCastR" type="RayCast2D" parent="Bi-Directional Raycast"]
+target_position = Vector2(10, 0)
+collision_mask = 6
+
+[node name="Sprite" parent="." instance=ExtResource("16_aqewy")]
+material = SubResource("ShaderMaterial_1aofi")
+texture = ExtResource("1_6k7s1")
+
+[node name="Animation Player" type="AnimationPlayer" parent="Sprite"]
+libraries = {
+"": SubResource("AnimationLibrary_n2xpc")
+}
+autoplay = "_move"
+
+[node name="Composition Nodes" type="Node" parent="."]
+
+[node name="Health" parent="Composition Nodes" instance=ExtResource("2_b7ahh")]
+health = 10.0
+
+[node name="Damage" parent="Composition Nodes" instance=ExtResource("6_pio2m")]
+damage = 5.0
+
+[node name="Gravity" parent="Composition Nodes" instance=ExtResource("4_cwk00")]
+
+[node name="Movement" parent="Composition Nodes" node_paths=PackedStringArray("character") instance=ExtResource("7_a0tks")]
+character = NodePath("../..")
+max_velocity = 50.0
+ground_accel = 10.0
+ground_decel = 20.0
+air_accel = 5.0
+air_decel = 3.0
+
+[node name="Finite State Machine" parent="Composition Nodes" node_paths=PackedStringArray("starting_state") instance=ExtResource("7_j5iob")]
+starting_state = NodePath("../../Goomba State/Move")
+
+[node name="Goomba State" type="Node" parent="."]
+script = ExtResource("14_ood5i")
+
+[node name="Idle" type="Node" parent="Goomba State" node_paths=PackedStringArray("idle_state", "move_state", "velocity_component", "gravity_component", "state_machine", "animation_player", "sprite", "character")]
+script = ExtResource("2_aq2gx")
+idle_state = NodePath(".")
+move_state = NodePath("../Move")
+velocity_component = NodePath("../../Composition Nodes/Movement")
+gravity_component = NodePath("../../Composition Nodes/Gravity")
+state_machine = NodePath("../../Composition Nodes/Finite State Machine")
+animation_player = NodePath("../../Sprite/Animation Player")
+sprite = NodePath("../../Sprite")
+character = NodePath("../..")
+animation_name = "_move"
+
+[node name="Move" type="Node" parent="Goomba State" node_paths=PackedStringArray("goomba", "bi_directional_raycast", "idle_state", "move_state", "velocity_component", "gravity_component", "state_machine", "animation_player", "sprite", "character")]
+script = ExtResource("15_k7igm")
+goomba = NodePath("../..")
+bi_directional_raycast = NodePath("../../Bi-Directional Raycast")
+idle_state = NodePath("../Idle")
+move_state = NodePath(".")
+velocity_component = NodePath("../../Composition Nodes/Movement")
+gravity_component = NodePath("../../Composition Nodes/Gravity")
+state_machine = NodePath("../../Composition Nodes/Finite State Machine")
+animation_player = NodePath("../../Sprite/Animation Player")
+sprite = NodePath("../../Sprite")
+character = NodePath("../..")
+animation_name = "_move"
+
+[connection signal="animation_finished" from="Sprite/Animation Player" to="Sprite" method="_on_animation_player_animation_finished"]
