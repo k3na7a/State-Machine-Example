@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://uowomoy0ju87"]
+
+[ext_resource type="Script" path="res://Scripts/Composition Scripts/StateMachine.gd" id="1_ful0x"]
+
+[node name="State Machine" type="Node"]
+script = ExtResource("1_ful0x")

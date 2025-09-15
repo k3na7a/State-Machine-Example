@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bceqa1od2rur6"]
+
+[ext_resource type="Script" path="res://Scenes/Player/Scripts/States/ScreenClamp.gd" id="1_24in0"]
+
+[node name="Screen Clamp" type="Node"]
+script = ExtResource("1_24in0")
